@@ -362,12 +362,14 @@ export class Logger {
           await fs.access(oldFile);
           await fs.rename(oldFile, newFile);
         } catch {
+          // Ignore file access/renaming errors
         }
       }
 
       const backupFile = `${this.config.logFile}.1`;
       await fs.rename(this.config.logFile, backupFile);
     } catch (error) {
+      // Ignore rotation errors
     }
   }
 

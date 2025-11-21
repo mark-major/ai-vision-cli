@@ -50,7 +50,7 @@ export class ImageAnnotator {
 
     try {
       // Load the original image
-      let image = sharp(inputPath);
+      const image = sharp(inputPath);
       const metadata = await image.metadata();
 
       // Create overlay with SVG

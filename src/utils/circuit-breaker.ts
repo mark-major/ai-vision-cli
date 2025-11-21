@@ -79,7 +79,7 @@ export class CircuitBreaker {
           state: CircuitState.CLOSED,
         };
 
-      case CircuitState.OPEN:
+      case CircuitState.OPEN: {
         const timeSinceOpen = Date.now() - this.state.lastStateChange.getTime();
         if (timeSinceOpen >= this.config.resetTimeout) {
           this.transitionToHalfOpen();
@@ -94,6 +94,7 @@ export class CircuitBreaker {
           reason: 'Circuit is open',
           waitTime: this.config.resetTimeout - timeSinceOpen,
         };
+      }
 
       case CircuitState.HALF_OPEN:
         return {

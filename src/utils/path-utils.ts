@@ -1,6 +1,6 @@
 import { join, resolve, dirname, normalize, extname } from 'path';
 import { homedir } from 'os';
-import { existsSync, lstatSync } from 'fs';
+import { existsSync, lstatSync, accessSync, constants } from 'fs';
 
 /**
  * Expand user home directory (~) in file paths
@@ -143,7 +143,6 @@ export async function ensureDirectoryExists(filePath: string): Promise<void> {
  */
 export function isPathWritable(path: string): boolean {
   try {
-    const { accessSync, constants } = require('fs');
     accessSync(path, constants.W_OK);
     return true;
   } catch {
