@@ -1,0 +1,40 @@
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
+  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: {
+        'moduleResolution': 'node',
+        'allowSyntheticDefaultImports': true,
+        'esModuleInterop': true,
+        'module': 'esnext',
+        'target': 'es2020',
+        'sourceMap': true,
+        'declaration': false,
+        'allowImportingTsExtensions': false,
+        'noEmit': false,
+      },
+    }],
+  },
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+    '!src/**/__tests__/**',
+    '!src/**/*.test.ts',
+    '!src/**/*.spec.ts',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  moduleFileExtensions: ['ts', 'js', 'json'],
+  testTimeout: 10000,
+  verbose: true,
+  moduleNameMapper: {
+    '^\\.{1,2}/types/(.*)\\.js$': '<rootDir>/src/types/$1.ts',
+    '^\\./types/(.*)\\.js$': '<rootDir>/src/types/$1.ts',
+    '^\\./(Config|Errors|Analysis|ObjectDetection|Providers|index)\\.js$': '<rootDir>/src/types/$1.ts',
+    '^\\.{1,2}/utils/(.*)\\.js$': '<rootDir>/src/utils/$1.ts',
+    '^\\./utils/(.*)\\.js$': '<rootDir>/src/utils/$1.ts',
+  },
+};

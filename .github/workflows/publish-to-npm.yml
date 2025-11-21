@@ -1,0 +1,124 @@
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Type of version bump'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      pre_release:
+        description: 'Publish as pre-release'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Bump version and create tag
+        run: |
+          VERSION_TYPE="${{ github.event.inputs.version_type }}"
+          PRE_RELEASE="${{ github.event.inputs.pre_release }}"
+
+          if [ "$PRE_RELEASE" = "true" ]; then
+            # For pre-releases, we use prerelease suffix
+            npm version $VERSION_TYPE --preid=beta
+          else
+            # For stable releases
+            npm version $VERSION_TYPE
+          fi
+
+          # Get the new version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "Bumped version to $NEW_VERSION"
+
+      - name: Push version bump and tag
+        run: |
+          git push origin main --follow-tags
+
+      - name: Check if package name is available
+        run: npm view ai-vision-cli || echo "Package not published yet"
+
+      - name: Publish to npm
+        run: |
+          PRE_RELEASE="${{ github.event.inputs.pre_release }}"
+          if [ "$PRE_RELEASE" = "true" ]; then
+            npm publish --tag beta
+          else
+            npm publish
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          release_name: Release v${{ env.NEW_VERSION }}
+          body: |
+            ## Changes in v${{ env.NEW_VERSION }}
+
+            This release was published automatically via GitHub Actions.
+
+            ### Installation
+            ```bash
+            ${{ github.event.inputs.pre_release == 'true' && 'npm install ai-vision-cli@beta' || 'npm install ai-vision-cli' }}
+            ```
+
+            ### Version Type
+            - Version bump: ${{ github.event.inputs.version_type }}
+            - Release type: ${{ github.event.inputs.pre_release == 'true' && 'Pre-release (beta)' || 'Stable release' }}
+
+            ### Built from
+            - Commit: ${{ github.sha }}
+          draft: false
+          prerelease: ${{ github.event.inputs.pre_release == 'true' }}
+
+      - name: Notify completion
+        run: |
+          echo "✅ Successfully published ai-vision-cli@${{ env.NEW_VERSION }} to npm!"
+          echo "🚦 Release type: ${{ github.event.inputs.pre_release == 'true' && 'Pre-release (beta)' || 'Stable release' }}"
+          echo "📦 Install with: ${{ github.event.inputs.pre_release == 'true' && 'npm install ai-vision-cli@beta' || 'npm install ai-vision-cli' }}"

@@ -1,0 +1,53 @@
+# AI Vision CLI Configuration
+# This file contains configuration for the AI Vision CLI tool
+
+# Provider selection (google or vertex_ai)
+providers:
+  image: google
+
+# Credentials (can also be set via environment variables)
+credentials:
+  # For Google Gemini API
+  gemini_api_key: ${GEMINI_API_KEY}
+
+  # For Google Vertex AI
+  vertex_credentials: ${VERTEX_CREDENTIALS}  # Path to service account JSON file
+  gcs_bucket_name: ${GCS_BUCKET_NAME}       # Required for Vertex AI
+
+# AI model settings
+settings:
+  # Models (optional - will use defaults if not specified)
+  image_model: "gemini-2.0-flash-exp"
+
+  # AI parameters
+  temperature: 0.4
+  top_p: 0.95
+  top_k: 32
+  max_tokens: 4096
+
+  # Output settings
+  output_format: json        # json | text | table
+  progress_bars: true        # Show progress indicators
+
+# File processing limits
+limits:
+  max_image_size: "20MB"     # Maximum image file size
+
+  # File upload thresholds (in bytes)
+  gemini_files_api_threshold: 10485760    # 10MB
+  vertex_ai_files_api_threshold: 0        # Always use GCS for Vertex AI
+
+# Supported file formats
+formats:
+  allowed_image_formats:
+    - "png"
+    - "jpg"
+    - "jpeg"
+    - "webp"
+    - "gif"
+    - "bmp"
+    - "tiff"
+
+# Logging configuration
+logging:
+  log_level: info            # info | debug | warn | error

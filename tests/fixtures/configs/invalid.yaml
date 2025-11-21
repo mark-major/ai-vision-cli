@@ -1,0 +1,13 @@
+provider: invalid-provider
+gemini:
+  apiKey: ""
+  model: ""
+vertex:
+  projectId: ""
+  location: ""
+output:
+  format: invalid-format
+reliability:
+  maxRetries: -1
+  retryDelay: -1
+  timeout: -1

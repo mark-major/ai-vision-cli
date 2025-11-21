@@ -1,0 +1,36 @@
+# Source files
+src/
+tests/
+*.ts
+*.ts.map
+tsconfig.json
+jest.config.js
+.eslintrc.js
+.prettierrc
+
+# Development files
+.env.example
+CLAUDE.md
+.github/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Test files
+test-image.png
+coverage/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

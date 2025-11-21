@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+// Require the built index file
+require('../dist/index.js');
