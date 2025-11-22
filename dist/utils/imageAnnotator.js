@@ -26,7 +26,7 @@ class ImageAnnotator {
             return outputPath;
         }
         try {
-            let image = (0, sharp_1.default)(inputPath);
+            const image = (0, sharp_1.default)(inputPath);
             const metadata = await image.metadata();
             const svgOverlay = this.createSVGOverlay(metadata.width, metadata.height, objects, opts);
             await image

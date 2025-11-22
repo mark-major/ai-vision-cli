@@ -132,8 +132,7 @@ async function ensureDirectoryExists(filePath) {
 }
 function isPathWritable(path) {
     try {
-        const { accessSync, constants } = require('fs');
-        accessSync(path, constants.W_OK);
+        (0, fs_1.accessSync)(path, fs_1.constants.W_OK);
         return true;
     }
     catch {
